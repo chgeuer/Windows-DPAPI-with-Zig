@@ -9,7 +9,9 @@ The [Microsoft Windows Data Protection API (DPAPI)](https://learn.microsoft.com/
 Assuming you have aDPAPI-protected (encrypted) file in the filesystem, this command compiles and decrypted the data:
 
 ```shell
-type .\msal_token_cache.bin | zig build run > msal_token_cache.json
+zig build -Doptimize=ReleaseSmall
+
+type %USERPROFILE%\.azure\msal_token_cache.bin | .\zig-out\bin\dpapi-unprotect.exe  | jq ".RefreshToken"
 ```
 
 ## Alternative in NET
