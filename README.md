@@ -18,6 +18,24 @@ Then you pipe the contents of an encrypted file into the executable, and process
 type %USERPROFILE%\.azure\msal_token_cache.bin | .\zig-out\bin\dpapi-unprotect.exe  | jq.exe ".RefreshToken"
 ```
 
+With the checked-in binaries, you can also do round-trip:
+
+```shell
+echo Hallo Welt | .\dpapi-protect.exe | .\dpapi-unprotect.exe
+```
+
+gives
+
+```
+C:\github\chgeuer\Windows-DPAPI-with-Zig (main -> origin)
+λ echo Hallo Welt | .\dpapi-protect.exe | .\dpapi-unprotect.exe
+
+Hallo Welt
+
+C:\github\chgeuer\Windows-DPAPI-with-Zig (main -> origin)
+λ 
+```
+
 ## Alternative in NET
 
 The C# version would be along these lines (using `System.Security.dll`):
