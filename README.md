@@ -15,20 +15,20 @@ zig build -Doptimize=ReleaseSmall
 Then you pipe the contents of an encrypted file into the executable, and process the output like you wish. For example, on Windows, the Azure CLI stores all management tokens as JSON structure in an encrypted file in my `.azure` directory. The following pipeline pipes that file into the decryption utility and uses [JQ](https://jqlang.github.io/jq/) to pretty-print parts of the JSON.
 
 ```shell
-type %USERPROFILE%\.azure\msal_token_cache.bin | .\zig-out\bin\dpapi-unprotect.exe  | jq.exe ".RefreshToken"
+type %USERPROFILE%\.azure\msal_token_cache.bin | .\zig-out\bin\dpapi.exe unwrap  | jq.exe ".RefreshToken"
 ```
 
 With the checked-in binaries, you can also do round-trip:
 
 ```shell
-echo Hallo Welt | .\dpapi-protect.exe | .\dpapi-unprotect.exe
+echo Hallo Welt | .\dpapi.exe wrap | .\dpapi.exe unwrap
 ```
 
 gives
 
 ```
 C:\github\chgeuer\Windows-DPAPI-with-Zig (main -> origin)
-λ echo Hallo Welt | .\dpapi-protect.exe | .\dpapi-unprotect.exe
+λ echo Hallo Welt | .\dpapi.exe wrap | .\dpapi.exe unwrap
 
 Hallo Welt
 

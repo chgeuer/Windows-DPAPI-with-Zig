@@ -108,15 +108,44 @@ pub fn readStdIn(allocator: std.mem.Allocator) ![]u8 {
     return try std.io.getStdIn().reader().readAllAlloc(allocator, max_input_size);
 }
 
+const Operation = enum { encrypt, decrypt };
+
+pub fn command(allocator: std.mem.Allocator) !Operation {
+    var args = try std.process.argsWithAllocator(allocator);
+    defer args.deinit();
+
+    if (!args.skip()) {
+        return .decrypt;
+    }
+    var x = args.next();
+    if (x == null) {
+        std.debug.print("Please supply wrap / unwrap argument", .{});
+        std.os.exit(1);
+    }
+
+    if (std.mem.eql(u8, x.?, "wrap") or
+        std.mem.eql(u8, x.?, "encrypt") or
+        std.mem.eql(u8, x.?, "protect"))
+    {
+        return .encrypt;
+    }
+
+    return .decrypt;
+}
+
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
     const input = try readStdIn(allocator);
     defer allocator.free(input);
 
-    // const output = try roundTrip(input, allocator);
-    // const output = try dpapi_wrap(input, allocator);
-    const output = try dpapi_unwrap(input, allocator);
+    var output: ?[]u8 = undefined;
+    if (try command(allocator) == .encrypt) {
+        output = try dpapi_wrap(input, allocator);
+    } else {
+        output = try dpapi_unwrap(input, allocator);
+    }
+
     if (output != null) {
         defer allocator.free(output.?);
         try std.io.getStdOut().writer().writeAll(output.?);
