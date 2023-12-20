@@ -4,14 +4,18 @@ This project features a little command line utility which reads encrypted data f
 
 The [Microsoft Windows Data Protection API (DPAPI)](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/) features functions for encrypting/wrapping/protecting and decrypting/unwrapping/unprotecting data, namely [CryptProtectData](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata) and [CryptUnprotectData](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata). These functions are defined in `dpapi.h`. 
 
-## Compiling an running
+## Compiling and running
 
-Assuming you have aDPAPI-protected (encrypted) file in the filesystem, this command compiles and decrypted the data:
+The following command compiles a small CLI application (18kB on Windows):
 
 ```shell
 zig build -Doptimize=ReleaseSmall
+```
 
-type %USERPROFILE%\.azure\msal_token_cache.bin | .\zig-out\bin\dpapi-unprotect.exe  | jq ".RefreshToken"
+Then you pipe the contents of an encrypted file into the executable, and process the output like you wish. For example, on Windows, the Azure CLI stores all management tokens as JSON structure in an encrypted file in my `.azure` directory. The following pipeline pipes that file into the decryption utility and uses [JQ](https://jqlang.github.io/jq/) to pretty-print parts of the JSON.
+
+```shell
+type %USERPROFILE%\.azure\msal_token_cache.bin | .\zig-out\bin\dpapi-unprotect.exe  | jq.exe ".RefreshToken"
 ```
 
 ## Alternative in NET
