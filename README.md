@@ -1,10 +1,16 @@
-# Exploring the Windows Data Protection API (DPAPI) Zig
-
-The DPAPI features functions for encrypting/wrapping/protecting and decrypting/unwrapping/unprotecting data, namely [CryptProtectData](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata) and [CryptUnprotectData](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata). 
+# Exploring the Windows Data Protection API (DPAPI) from [Zig](https://ziglang.org/)
 
 This project features a little command line utility which reads encrypted data from stdin and writes to stdout.
 
-These functions are implemented in `dpapi.h`. 
+The [Microsoft Windows Data Protection API (DPAPI)](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/) features functions for encrypting/wrapping/protecting and decrypting/unwrapping/unprotecting data, namely [CryptProtectData](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata) and [CryptUnprotectData](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata). These functions are defined in `dpapi.h`. 
+
+## Compiling an running
+
+Assuming you have aDPAPI-protected (encrypted) file in the filesystem, this command compiles and decrypted the data:
+
+```shell
+type .\msal_token_cache.bin | zig build run > msal_token_cache.json
+```
 
 ## Alternative in NET
 
