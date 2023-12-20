@@ -4,14 +4,15 @@ const win = std.os.windows;
 // C:\ProgramData\chocolatey\lib\zig\tools\zig-windows-x86_64-0.11.0\lib\libc\include\any-windows-any\dpapi.h
 // C:\Program Files\Microsoft Visual Studio\2022\Enterprise\SDK\ScopeCppSDK\vc15\SDK\include\um\dpapi.h
 // C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\dpapi.h
+const CRYPTPROTECT_UI_FORBIDDEN: win.DWORD = 0x1;
+
+// https://learn.microsoft.com/en-us/windows/win32/api/dpapi/ns-dpapi-cryptprotect_promptstruct
 const CRYPTPROTECT_PROMPTSTRUCT = extern struct {
     cbSize: win.DWORD, //        DWORD   cbSize;
     dwPromptFlags: win.DWORD, // DWORD   dwPromptFlags;
     hwndApp: win.HWND, //        HWND    hwndApp;
     szPrompt: *win.LPCWSTR, //   LPCWSTR szPrompt;
 };
-
-const CRYPTPROTECT_UI_FORBIDDEN: win.DWORD = 0x1;
 
 // https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata
 pub extern "crypt32" fn CryptUnprotectData(
@@ -24,6 +25,7 @@ pub extern "crypt32" fn CryptUnprotectData(
     pDataOut: *Blob,
 ) callconv(win.WINAPI) win.BOOL;
 
+// https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata
 pub extern "crypt32" fn CryptProtectData(
     pDataIn: *Blob,
     ppszDataDescr: ?*win.LPWSTR,
@@ -96,8 +98,9 @@ fn roundTrip(input: []u8, allocator: std.mem.Allocator) !?[]u8 {
     if (encrypted != null) {
         defer allocator.free(encrypted.?);
         return try dpapi_unwrap(encrypted.?, allocator);
+    } else {
+        return null;
     }
-    return null;
 }
 
 pub fn readStdIn(allocator: std.mem.Allocator) ![]u8 {
@@ -111,6 +114,8 @@ pub fn main() !void {
     const input = try readStdIn(allocator);
     defer allocator.free(input);
 
+    // const output = try roundTrip(input, allocator);
+    // const output = try dpapi_wrap(input, allocator);
     const output = try dpapi_unwrap(input, allocator);
     if (output != null) {
         defer allocator.free(output.?);
