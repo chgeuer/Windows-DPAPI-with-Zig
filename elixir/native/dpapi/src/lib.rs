@@ -6,7 +6,6 @@ use std::io::Write;
 // https://stackoverflow.com/questions/65969779/rust-ffi-with-windows-cryptounprotectdata
 // https://users.rust-lang.org/t/how-can-i-use-cryptunprotectdata/79946/2
 
-
 #[repr(C)]
 pub struct Blob {
     cb_data: u32,
