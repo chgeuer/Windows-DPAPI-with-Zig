@@ -88,15 +88,8 @@ name = "dpapi_rust"
 version = "0.1.0"
 dependencies = [
  "clap",
- "mode",
  "winapi",
 ]
-
-[[package]]
-name = "mode"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86d255527a1f15a7ad1d288a2bfdf7e465f85f66b18923b77fbe7cb3a9673cca"
 
 [[package]]
 name = "strsim"

@@ -7,7 +7,7 @@ authors = ["Dr. Christian Geuer-Pollmann <geuerp@apache.org>"]
 [dependencies]
 clap = { version = "4.0.29", features = ["cargo"] }
 winapi = { version = "0.3", features = ["winbase", "windef", "consoleapi"] }
-mode = "0.4"
+# mode = "0.4"
 
 # https://github.com/johnthagen/min-sized-rust
 [profile.release]
