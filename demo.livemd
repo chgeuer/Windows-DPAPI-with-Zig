@@ -1,0 +1,22 @@
+# Untitled notebook
+
+```elixir
+Mix.install([
+  {:dpapi, path: "C:\\Users\\chgeuer\\Desktop\\zig2\\elixir"}
+])
+```
+
+## Section
+
+```elixir
+"C:\\Users\\chgeuer\\Desktop\\zig2\\zig\\dpapi_encrypted.bin"
+|> File.read!()
+|> DPAPI.unwrap()
+|> IO.puts()
+```
+
+```elixir
+"Geheim"
+|> DPAPI.wrap()
+|> DPAPI.unwrap()
+```

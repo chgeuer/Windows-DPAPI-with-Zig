@@ -1,7 +1,6 @@
 use std::ptr;
 use rustler::types::OwnedBinary;
-use rustler::{Env, Error, Term, Binary};
-// use rustler::{Atom, NifStruct, ResourceArc};
+use rustler::{Env, Error, Term, Binary}; // use rustler::{Atom, NifStruct, ResourceArc};
 use std::io::Write;
 
 // https://stackoverflow.com/questions/65969779/rust-ffi-with-windows-cryptounprotectdata

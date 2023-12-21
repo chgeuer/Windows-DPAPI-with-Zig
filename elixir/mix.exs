@@ -1,9 +1,9 @@
-defmodule RustPlayground.MixProject do
+defmodule DPAPI.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :rust_playground,
+      app: :dpapi,
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
@@ -17,7 +17,6 @@ defmodule RustPlayground.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
        {:rustler, "~> 0.30.0", runtime: false}
