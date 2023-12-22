@@ -1,9 +1,9 @@
-defmodule DPAPI.MixProject do
+defmodule Windows.API.DataProtection.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :dpapi,
+      app: :ex_windows_api_dataprotection_rustler,
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
@@ -13,7 +13,7 @@ defmodule DPAPI.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: []
     ]
   end
 

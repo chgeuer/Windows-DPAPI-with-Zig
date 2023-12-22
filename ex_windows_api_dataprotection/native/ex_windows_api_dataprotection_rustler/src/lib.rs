@@ -1,12 +1,14 @@
 use std::ptr;
 use rustler::types::OwnedBinary;
-use rustler::{Env, Error, Term, Binary}; // use rustler::{Atom, NifStruct, ResourceArc};
+use rustler::{Env, Error, Term, Binary};
+// use rustler::{Atom, NifStruct, ResourceArc};
 use std::io::Write;
 
 // https://stackoverflow.com/questions/65969779/rust-ffi-with-windows-cryptounprotectdata
 // https://users.rust-lang.org/t/how-can-i-use-cryptunprotectdata/79946/2
 
 
+#[cfg(target_os = "windows")]
 #[repr(C)]
 pub struct Blob {
     cb_data: u32,
@@ -34,6 +36,16 @@ impl Drop for Blob {
     }
 }
 
+#[cfg(target_os = "windows")]
+#[repr(C)]
+pub struct CryptProtectPromptStruct {
+    cb_size: u32,
+    dw_prompt_flags: u32,
+    hwnd_app: winapi::shared::windef::HWND,
+    sz_prompt: *const u16,
+}
+
+#[cfg(target_os = "windows")]
 #[link(name = "crypt32")]
 extern "system" {
     pub fn CryptUnprotectData(
@@ -50,21 +62,14 @@ extern "system" {
         p_data_in: *const Blob,
         ppsz_data_descr: *mut *mut u16,
         p_optional_entropy: *const Blob,
-        pv_reserved: *mut winapi::ctypes::c_void, // *mut std::ffi::c_void,
+        pv_reserved: *mut winapi::ctypes::c_void,
         p_prompt_struct: *const CryptProtectPromptStruct,
         dw_flags: u32,
         p_data_out: *mut Blob,
     ) -> i32;
 }
 
-#[repr(C)]
-pub struct CryptProtectPromptStruct {
-    cb_size: u32,
-    dw_prompt_flags: u32,
-    hwnd_app: winapi::shared::windef::HWND,
-    sz_prompt: *const u16,
-}
-
+#[cfg(target_os = "windows")]
 pub fn dpapi_wrap(buffer: &[u8]) -> Result<Vec<u8>, ()> {
     let input = Blob::new(buffer);
 
@@ -94,6 +99,7 @@ pub fn dpapi_wrap(buffer: &[u8]) -> Result<Vec<u8>, ()> {
     }
 }
 
+#[cfg(target_os = "windows")]
 pub fn dpapi_unwrap(buffer: &[u8]) -> Result<Vec<u8>, ()> {
     let input = Blob::new(buffer);
 
@@ -128,16 +134,7 @@ mod atoms {
         ok,
         wrap_failed,
         unwrap_failed,
-        error,
-        eof,
-
-        // Posix
-        enoent, // File does not exist
-        eacces, // Permission denied
-        epipe, // Broken pipe
-        eexist, // File exists
-
-        unknown // Other error
+        only_available_on_windows
     }
 }
 
@@ -146,8 +143,9 @@ fn load(_env: Env, _: Term) -> bool {
     true
 }
 
+#[cfg(target_os = "windows")]
 #[rustler::nif]
-fn wrap<'a>(
+fn nif_wrap<'a>(
     env: Env<'a>,
     input: Binary, 
 ) -> Result<Term<'a>, Error> {
@@ -164,8 +162,9 @@ fn wrap<'a>(
     }
 }
 
+#[cfg(target_os = "windows")]
 #[rustler::nif]
-fn unwrap<'a>(
+fn nif_unwrap<'a>(
     env: Env<'a>,
     input: Binary, 
 ) -> Result<Term<'a>, Error> {
@@ -182,4 +181,24 @@ fn unwrap<'a>(
     }
 }
 
-rustler::init!("Elixir.DPAPI", [wrap, unwrap], load = load);
+#[cfg(not(target_os = "windows"))]
+#[rustler::nif]
+fn nif_wrap<'a>(
+    _env: Env<'a>,
+    _input: Binary, 
+) -> Result<Term<'a>, Error> {
+    Ok(atoms::only_available_on_windows().to_term(env))
+}
+
+
+#[cfg(not(target_os = "windows"))]
+#[rustler::nif]
+fn nif_unwrap<'a>(
+    _env: Env<'a>,
+    _input: Binary, 
+) -> Result<Term<'a>, Error> {
+    Ok(atoms::only_available_on_windows().to_term(env))
+}
+
+
+rustler::init!("Elixir.Windows.API.DataProtection.Native", [nif_wrap, nif_unwrap], load = load);
