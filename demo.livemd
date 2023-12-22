@@ -2,21 +2,15 @@
 
 ```elixir
 Mix.install([
-  {:dpapi, path: "C:\\Users\\chgeuer\\Desktop\\zig2\\elixir"}
+  {:dpapi, path: "C:\\github\\chgeuer\\Windows-DPAPI-with-Zig\\elixir"}
 ])
 ```
 
 ## Section
 
 ```elixir
-"C:\\Users\\chgeuer\\Desktop\\zig2\\zig\\dpapi_encrypted.bin"
+"#{System.get_env("USERPROFILE")}\\.azure\\msal_token_cache.bin"
 |> File.read!()
 |> DPAPI.unwrap()
 |> IO.puts()
-```
-
-```elixir
-"Geheim"
-|> DPAPI.wrap()
-|> DPAPI.unwrap()
 ```
